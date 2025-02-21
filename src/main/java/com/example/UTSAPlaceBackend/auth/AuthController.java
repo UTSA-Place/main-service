@@ -1,6 +1,7 @@
-package com.example.UTSAPlaceBackend.models;
+package com.example.UTSAPlaceBackend.auth;
 
 
+import com.example.UTSAPlaceBackend.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

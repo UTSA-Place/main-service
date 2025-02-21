@@ -1,5 +1,6 @@
-package com.example.UTSAPlaceBackend.models;
+package com.example.UTSAPlaceBackend.auth;
 
+import com.example.UTSAPlaceBackend.models.User;
 import org.springframework.stereotype.Repository;
 
 

@@ -1,10 +1,10 @@
-package com.example.UTSAPlaceBackend.models;
+package com.example.UTSAPlaceBackend.fileServer;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HomeController {
+public class FileServerController {
 
     @GetMapping("/")
     public String index() {

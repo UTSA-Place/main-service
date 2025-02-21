@@ -1,7 +1,6 @@
 package com.example.UTSAPlaceBackend.config;
 
-import com.example.UTSAPlaceBackend.models.UserDetailsServiceImpl;
-import org.springframework.boot.autoconfigure.web.WebProperties;
+import com.example.UTSAPlaceBackend.auth.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,10 +25,14 @@ public class AuthConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/*")
-                                .permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .usernameParameter("username")
+                        .permitAll())
+                //.exceptionHandling()
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/api/*").authenticated()
+                        .anyRequest().permitAll())
                 .build();
     }
 
