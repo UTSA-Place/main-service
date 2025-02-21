@@ -27,7 +27,12 @@ public class AuthController {
     @PostMapping("/register")
     public User register(@RequestBody User user) {
         log.info("Registering user: {}", user.getUsername());
-        return authService.createUser(user);
+        try {
+            return authService.createUser(user);
+        } catch (Exception e) {
+            log.info(String.format("Unable  to create new user: %s. Error: %s", user.getUsername(), e.getMessage()));
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/login")

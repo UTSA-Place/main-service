@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: UTSAPlaceBackend
+  h2:
+    console:
+      # See DB console for local deployment at: http://localhost:8082/h2-console
+      enabled: ${PROD:true}
+  datasource:
+    # Use in ram memory DB if local dev. Uses stored memory DB for prod
+    url: ${H2_URL:jdbc:h2:file:~/h2_db}
+    driver-class-name: org.h2.Driver
+    # Set default database user and password as
+    # "user", "password" if env variables not present
+    username: ${USERNAME:user}
+    password: ${PASSWORD:password}
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        hbm2ddl:
+          auto: update
+
+
+server:
+  # Local dev port 8080 if not env variable
+  port: ${PORT:8080}
+
+
+
