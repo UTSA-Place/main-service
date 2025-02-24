@@ -1,7 +1,9 @@
-package com.example.UTSAPlaceBackend.auth;
+package com.example.UTSAPlaceBackend.user;
 
 
+import com.example.UTSAPlaceBackend.models.LoginResponse;
 import com.example.UTSAPlaceBackend.models.User;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,20 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private UserService userService;
 
-    @Autowired
     private AuthenticationManager authManager;
-
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
         log.info("Registering user: {}", user.getUsername());
         try {
-            return authService.createUser(user);
+            return userService.createUser(user);
         } catch (Exception e) {
             log.info(String.format("Unable  to create new user: %s. Error: %s", user.getUsername(), e.getMessage()));
             throw new RuntimeException(e);
@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    public LoginResponse login(@RequestBody User user) {
         log.info("Logging in user: {}", user.getUsername());
 
         // Perform sprint authentication
@@ -44,7 +44,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
         if(authentication.isAuthenticated()) {
-            return authService.login((User) authentication.getPrincipal());
+            return userService.login((User) authentication.getPrincipal());
         }
 
         // Failed authentication

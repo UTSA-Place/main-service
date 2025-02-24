@@ -7,12 +7,12 @@ spring:
       enabled: ${PROD:true}
   datasource:
     # Use in ram memory DB if local dev. Uses stored memory DB for prod
-    url: ${H2_URL:jdbc:h2:file:~/h2_db}
+    url: ${H2_URL:jdbc:h2:file:./h2_db}
     driver-class-name: org.h2.Driver
     # Set default database user and password as
     # "user", "password" if env variables not present
-    username: ${USERNAME:user}
-    password: ${PASSWORD:password}
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:password}
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
