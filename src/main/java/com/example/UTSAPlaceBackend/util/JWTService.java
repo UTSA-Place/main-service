@@ -11,10 +11,12 @@ import org.springframework.stereotype.Component; // Importing Map interface from
 
 import io.jsonwebtoken.Claims; // Importing Function interface from java.util.function package
 import io.jsonwebtoken.Jwts; // Importing SecretKey interface from javax.crypto package
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Component // Marking this class as a Spring component
 public class JWTService { // Declaring the JWTService class
-    private static final SecretKey secretKey = Jwts.SIG.HS256.key().build(); // Initializing secretKey using JJWT library
+    private static final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Initializing secretKey using JJWT library
     private Map<String, Object> claims = new HashMap<>(); // Creating a claims map
 
     public JWTService(Map<String, Object> claims) { // Constructor with claims parameter
@@ -29,10 +31,10 @@ public class JWTService { // Declaring the JWTService class
         claims.put(username, role); // Adding the username and role to the claims map
         return Jwts
                 .builder() // Building the JWT token
-                .claims(claims) // Setting the claims
-                .subject(username) // Setting the subject (username)
-                .issuedAt(new Date(System.currentTimeMillis())) // Setting the issued date
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // Setting the expiration date (1 week)
+                .setClaims(claims) // Setting the claims
+                .setSubject(username) // Setting the subject (username)
+                .setIssuedAt(new Date(System.currentTimeMillis())) // Setting the issued date
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // Setting the expiration date (1 week)
                 .signWith(secretKey) // Signing the token with the secret key
                 .compact(); // Compacting the token into a string
     }
@@ -61,11 +63,11 @@ public class JWTService { // Declaring the JWTService class
 
     // Method to extract all claims from a JWT token
     private Claims extractClaims(String token) {
-        return Jwts.parser() // Creating a JWT parser
-            .verifyWith(secretKey) // Setting the secret key for verification
+        return Jwts.parserBuilder()// Creating a JWT parser
+            .setSigningKey(secretKey) // Setting the secret key for verification
             .build() // Building the parser
-            .parseSignedClaims(token) // Parsing the signed claims from the token
-            .getPayload(); // Getting the payload (claims) from the parsed token
+            .parseClaimsJws(token) // Parsing the claims from the token
+            .getBody(); // Getting the body (claims) from the parsed token
     }
 
     // Method to check if a JWT token is expired
@@ -75,11 +77,11 @@ public class JWTService { // Declaring the JWTService class
 
     // Static method to parse a JWT token and extract claims
     public static Claims parseToken(String token) {
-        return Jwts.parser() // Creating a JWT parser
-                .verifyWith(secretKey) // Setting the secret key for verification
+        return Jwts.parserBuilder()// Creating a JWT parser
+                .setSigningKey(secretKey) // Setting the secret key for verification
                 .build() // Building the parser
-                .parseSignedClaims(token) // Parsing the signed claims from the token
-                .getPayload(); // Getting the payload (claims) from the parsed token
+                .parseClaimsJws(token) // Parsing the signed claims from the token
+                .getBody(); // Getting the body (claims) from the parsed token
     }
 
 
