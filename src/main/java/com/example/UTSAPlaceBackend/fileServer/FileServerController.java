@@ -21,10 +21,7 @@ public class FileServerController {
         return "register";
     }
 
-    @GetMapping("/canvas")
-    public String canvas() {
-        return "canvas";
-    }
+
 
     @GetMapping("/confirmation")
     public String confirmation() {
@@ -34,6 +31,16 @@ public class FileServerController {
     @GetMapping("/forgotpassword")
     public String forgotPassword() {
         return "forgotpassword";
+    }
+
+    @GetMapping("/secret")
+    public String secret() {
+        return "secret";
+    }
+
+    @GetMapping("/canvas")
+    public String canvas() {
+        return "canvas";
     }
 
     @GetMapping("/contact")
