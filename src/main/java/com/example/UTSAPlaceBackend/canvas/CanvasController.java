@@ -1,17 +1,28 @@
 package com.example.UTSAPlaceBackend.canvas;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.UTSAPlaceBackend.models.Canvas;
+import com.example.UTSAPlaceBackend.models.Pixel;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/canvas")
+@AllArgsConstructor
 public class CanvasController {
 
+    private CanvasService canvasService;
+
     @PostMapping("/place")
-    public void placePixel(@RequestBody int x, @RequestBody int y) {
-        // TODO: Place pixel
+    public void placePixel(@RequestBody Pixel pixel) {
+        Pixel savedPixel = canvasService.placePixel(pixel);
+        log.info("Pixel created: {}", savedPixel.toString());
+    }
+
+    @GetMapping("/")
+    public Canvas getCanvas() {
+        return canvasService.getCanvas();
     }
 
 

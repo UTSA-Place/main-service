@@ -1,25 +1,32 @@
 package com.example.UTSAPlaceBackend.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
+import java.util.List;
 
-
-@Data
-@AllArgsConstructor
+@Getter
 public class Canvas {
+    final int MATRIX_SIZE = 500;
 
-    private int length;
+    private final String[][] pixels = new String[MATRIX_SIZE][MATRIX_SIZE];
 
-    private int width;
+    public Canvas(List<Pixel> pixelList) {
+        for(Pixel p: pixelList) {
+            pixels[p.getPoint().getRow()][p.getPoint().getCol()] = p.getColor();
+        }
+    }
 
-    private int [][] matrix;
+    public void putPixel(final Pixel pixel) {
+        pixels[pixel.getPoint().getRow()][pixel.getPoint().getCol()] = pixel.getColor();
+    }
 
-    public void placePixel(int x, int y, String color) {}
+    public Pixel getPixel(int row, int col) {
+        Pixel p = new Pixel();
+        p.setColor(pixels[row][col]);
+        p.setInnerRow(row);
+        p.setInnerCol(col);
+        return p;
 
-    public void clearCanvas() {}
-
-    public void removePixel(int x, int y, String color) {}
-
+    }
 
 }

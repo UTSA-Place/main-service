@@ -14,9 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -43,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/*").authenticated()
-                        .requestMatchers("/*", "/auth/*", "/css/*", "/js/*").permitAll()
+                        .requestMatchers("/*","/swagger-ui/*", "/v3/api-docs/**", "/auth/*", "/css/*", "/js/*", "/canvas/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
