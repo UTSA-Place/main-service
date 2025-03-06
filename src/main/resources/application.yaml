@@ -6,7 +6,7 @@ spring:
       # See DB console for local deployment at: http://localhost:8082/h2-console
       enabled: ${PROD:true}
   datasource:
-    # Use in ram memory DB if local dev. Uses stored memory DB for prod
+    # Uses stored file memory DB for prod
     url: ${H2_URL:jdbc:h2:file:./h2_db}
     driver-class-name: org.h2.Driver
     # Set default database user and password as
@@ -25,6 +25,7 @@ spring:
 server:
   # Local dev port 8080 if not env variable
   port: ${PORT:8080}
+
 
 
 

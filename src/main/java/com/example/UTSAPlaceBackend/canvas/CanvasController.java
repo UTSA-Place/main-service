@@ -16,6 +16,7 @@ public class CanvasController {
 
     @PostMapping("/place")
     public void placePixel(@RequestBody Pixel pixel) {
+        log.info("Pixel created: {}", pixel.toString());
         Pixel savedPixel = canvasService.placePixel(pixel);
         log.info("Pixel created: {}", savedPixel.toString());
     }
