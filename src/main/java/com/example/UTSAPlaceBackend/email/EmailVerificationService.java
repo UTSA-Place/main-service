@@ -69,7 +69,7 @@ public class EmailVerificationService {
         // Send email with verification link
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@utsaplace.com");
-        message.setTo("briplomo@gmail.com");
+        message.setTo(user.getUsername());
         message.setSubject("Verify email address");
         message.setText(String.format("Hello %s%s%s", BASE_URL, "verification/", newVerification.getToken()));
 
