@@ -34,3 +34,6 @@ build/
 
 ### Test H2 DB ###
 h2*
+
+##### Env variables #####
+.env
