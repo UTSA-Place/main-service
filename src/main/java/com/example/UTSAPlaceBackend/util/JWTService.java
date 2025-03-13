@@ -1,16 +1,18 @@
 package com.example.UTSAPlaceBackend.util;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map; 
 import java.util.function.Function;
+
 import javax.crypto.SecretKey;
-import lombok.AllArgsConstructor;
+
+import org.springframework.stereotype.Service;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Service;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JWTService {
@@ -34,10 +36,16 @@ public class JWTService {
     }
 
     // Method to validate a JWT token
-    public Boolean validate(String token, String username) {
-        final String dbUsername = extractUsername(token);
-        return username.equals(dbUsername) && !isTokenExpired(token);
+    public Boolean validate(String token) {
+        try {
+            final String username = extractUsername(token);
+            // TODO  query db for userdetails, extract the token and compare it with the usernamne in the db
+            return username != null && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false; 
+        }
     }
+    
 
     // Method to extract the username from a JWT token
     public String extractUsername(String tokenString) {
@@ -77,7 +85,16 @@ public class JWTService {
                 .parseClaimsJws(token)
                 .getBody();
     }
+    
+    public void setUserInRequest(String username, HttpServletRequest request){
+        request.setAttribute("username", username);
+    }
 
+
+
+
+// method to check for revoked tokens
+//    public boolean isTokenRevoked(String token) {
 
 
    
