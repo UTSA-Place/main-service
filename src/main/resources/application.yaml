@@ -34,3 +34,5 @@ SMTP_USERNAME: ${SMTP_USERNAME}
 SMTP_PASSWORD: ${SMTP_PASSWORD}
 
 
+jwt:
+  secret: UTSAPlaceBackend

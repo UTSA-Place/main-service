@@ -5,18 +5,27 @@ import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JWTService {
-    private static final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+    
+    private  final SecretKey secretKey;
+
+       public JWTService(@Value("${jwt.secret}") String secret) {
+        this.secretKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+    }
+
+
 
 
     // Method to create a JWT token
@@ -76,8 +85,8 @@ public class JWTService {
         return extractExpiration(token).before(new Date());
     }
 
-    // Static method to parse a JWT token and extract claims
-    public static Claims parseToken(String token) {
+    // Method to parse a JWT token and extract claims
+    public Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
@@ -88,6 +97,9 @@ public class JWTService {
     public void setUserInRequest(String username, HttpServletRequest request){
         request.setAttribute("username", username);
     }
+
+   
+    
 
 
 
