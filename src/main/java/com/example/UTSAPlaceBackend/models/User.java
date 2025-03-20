@@ -1,13 +1,17 @@
 package com.example.UTSAPlaceBackend.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.*;
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,6 +24,7 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private boolean enabled;
+    private String role;
 
 
     @Override
@@ -30,5 +35,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public String getUsername(){
+        return username;
+    }
+
+    public String getRole(){
+        return role;
     }
 }

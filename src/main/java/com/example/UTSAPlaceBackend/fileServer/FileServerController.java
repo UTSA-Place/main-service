@@ -1,4 +1,4 @@
-package com.example.UTSAPlaceBackend.fileServer;
+ package com.example.UTSAPlaceBackend.fileServer;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,17 +1,19 @@
 package com.example.UTSAPlaceBackend.user;
 
-import com.example.UTSAPlaceBackend.config.PasswordEncoder;
-import com.example.UTSAPlaceBackend.email.EmailVerificationService;
-import com.example.UTSAPlaceBackend.models.LoginResponse;
-import com.example.UTSAPlaceBackend.models.User;
-import com.example.UTSAPlaceBackend.util.EmailValidator;
-import com.example.UTSAPlaceBackend.util.exceptions.UTSAPlaceException;
-import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.example.UTSAPlaceBackend.email.EmailVerificationService;
+import com.example.UTSAPlaceBackend.models.LoginResponse;
+import com.example.UTSAPlaceBackend.models.User;
+import com.example.UTSAPlaceBackend.util.EmailValidator;
+import com.example.UTSAPlaceBackend.util.JWTService;
+import com.example.UTSAPlaceBackend.util.exceptions.UTSAPlaceException;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -26,6 +28,8 @@ public class AuthService {
     private AuthenticationManager authManager;
 
     private UserRepository userRepository;
+
+    private JWTService jwtService;
 
     public LoginResponse login(User user) {
 
@@ -42,8 +46,10 @@ public class AuthService {
                         "Check you email for verification or get a new verification link.");
         }
 
-        // TODO: JWT create token and return
-        return new LoginResponse();
+        String token = jwtService.createToken(user.getUsername(), user.getRole());
+        LoginResponse response = new LoginResponse();
+        response.setToken(token);
+        return response;
 
     }
 

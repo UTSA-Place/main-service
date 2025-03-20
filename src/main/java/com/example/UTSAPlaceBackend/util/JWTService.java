@@ -39,7 +39,6 @@ public class JWTService {
     public Boolean validate(String token) {
         try {
             final String username = extractUsername(token);
-            // TODO  query db for userdetails, extract the token and compare it with the usernamne in the db
             return username != null && !isTokenExpired(token);
         } catch (Exception e) {
             return false; 
