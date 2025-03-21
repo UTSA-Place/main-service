@@ -46,7 +46,7 @@ public class AuthService {
                         "Check you email for verification or get a new verification link.");
         }
 
-        String token = jwtService.createToken(user.getUsername(), user.getRole());
+        String token = jwtService.createToken2(user.getUsername());
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         return response;

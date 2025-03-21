@@ -44,6 +44,21 @@ public class JWTService {
                 .compact();
     }
 
+    public String createToken2(String username) {
+        Map<String, String> claims = Map.of(
+                "username", username
+               
+        );
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .signWith(secretKey)
+                .compact();
+    }
+
     // Method to validate a JWT token
     public Boolean validate(String token) {
         try {
