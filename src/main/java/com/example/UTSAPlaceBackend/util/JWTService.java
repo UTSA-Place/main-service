@@ -18,18 +18,13 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class JWTService {
 
-    
-    private  final SecretKey secretKey;
+    @Value("${jwt.secret}")
+    private String JWT_KEY;
 
-       public JWTService(@Value("${jwt.secret}") String secret) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-    }
-
-
-
+    private final SecretKey secretKey = new SecretKeySpec(JWT_KEY.getBytes(), "HmacSHA256");
 
     // Method to create a JWT token
-    public String createToken(String username , String role) {
+    public String createToken(String username, String role) {
         Map<String, String> claims = Map.of(
                 "username", username,
                 "role", role
@@ -47,7 +42,6 @@ public class JWTService {
     public String createToken2(String username) {
         Map<String, String> claims = Map.of(
                 "username", username
-               
         );
         return Jwts
                 .builder()
@@ -65,10 +59,10 @@ public class JWTService {
             final String username = extractUsername(token);
             return username != null && !isTokenExpired(token);
         } catch (Exception e) {
-            return false; 
+            return false;
         }
     }
-    
+
 
     // Method to extract the username from a JWT token
     public String extractUsername(String tokenString) {
@@ -89,10 +83,10 @@ public class JWTService {
     // Method to extract all claims from a JWT token
     private Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-            .setSigningKey(secretKey)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     // Method to check if a JWT token is expired
@@ -108,19 +102,14 @@ public class JWTService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-    
-    public void setUserInRequest(String username, HttpServletRequest request){
+
+    public void setUserInRequest(String username, HttpServletRequest request) {
         request.setAttribute("username", username);
     }
 
-   
-    
-
-
-
 
 // method to check for revoked tokens
-//    public boolean isTokenRevoked(String token) {
+//    public boolean isTokenRevoked(String token) {}
 
 
    

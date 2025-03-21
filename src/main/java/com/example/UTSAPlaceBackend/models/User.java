@@ -22,6 +22,8 @@ public class User implements UserDetails {
 
     @Id
     private String username;
+    private String firstName;
+    private String lastName;
     private String password;
     private boolean enabled;
     
@@ -37,13 +39,5 @@ public class User implements UserDetails {
         return enabled;
     }
 
-//     @Override
-//     public String getUsername(){
-//         return username;
-//     }
-
-//     public String getRole(){
-//         return role;
-//     }
  } 
 

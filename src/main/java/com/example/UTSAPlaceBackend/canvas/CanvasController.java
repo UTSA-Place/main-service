@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/canvas")
+@RequestMapping("/api/canvas")
 @AllArgsConstructor
 public class CanvasController {
 

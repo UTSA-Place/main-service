@@ -1,5 +1,7 @@
 package com.example.UTSAPlaceBackend.util.exceptions;
 
-public class UTSAPlaceException extends RuntimeException {
-    // TODO:
+public class UTSAPlaceException extends Exception {
+    UTSAPlaceException(String message) {
+        super(message);
+    }
 }

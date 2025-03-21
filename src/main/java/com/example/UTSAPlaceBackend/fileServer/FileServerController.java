@@ -21,8 +21,6 @@ public class FileServerController {
         return "register";
     }
 
-
-
     @GetMapping("/confirmation")
     public String confirmation() {
         return "confirmation";

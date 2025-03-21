@@ -1,5 +1,9 @@
 package com.example.UTSAPlaceBackend.user;
 
+import com.example.UTSAPlaceBackend.util.exceptions.AuthenticationException;
+import com.example.UTSAPlaceBackend.util.exceptions.EmailNotVerifiedException;
+import com.example.UTSAPlaceBackend.util.exceptions.RegistrationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +19,7 @@ import com.example.UTSAPlaceBackend.util.exceptions.UTSAPlaceException;
 
 import lombok.AllArgsConstructor;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AuthService {
@@ -31,19 +36,19 @@ public class AuthService {
 
     private JWTService jwtService;
 
-    public LoginResponse login(User user) {
+    public LoginResponse login(User user) throws AuthenticationException, EmailNotVerifiedException {
 
         // Perform spring authentication
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
-        // If user is not authenticated or user email is not verified, throw exception
+        // If user is not authenticated throw exception
         if(!authentication.isAuthenticated()) {
-            throw new RuntimeException("Invalid credentials");
+                throw new AuthenticationException();
         }
-        if (((User) authentication.getPrincipal()).isEnabled()) {
-            throw new RuntimeException("User email not verified. " +
-                        "Check you email for verification or get a new verification link.");
+        // Check is user email is verified
+        if (!((User) authentication.getPrincipal()).isEnabled()) {
+            throw new EmailNotVerifiedException();
         }
 
         String token = jwtService.createToken2(user.getUsername());
@@ -53,37 +58,36 @@ public class AuthService {
 
     }
 
-    public User register(User user) throws Exception {
+    public User register(User user) throws RegistrationException {
 
         final String email = user.getUsername();
 
         // Throw exception if user already exists
         if(userRepository.findByUsername(email).isPresent()) {
-            //TODO: Specify error
-            throw new UTSAPlaceException();
+            log.info("Registration failed for user: {}. User already exists.", email);
+            throw new RegistrationException("User already exists");
         }
-        // Throw exception id email is not valid
+        // Throw exception if email is not a valid UTSA email
         if(!emailValidator.test(email)) {
-            // TODO:
-            throw new UTSAPlaceException();
+            log.info("Registration failed for user: {}. User email not valid UTSA email.", email);
+            throw new RegistrationException("Not a valid UTSA email");
         }
 
         // Encrypt password before storing in DB
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Set user to disabled until email is verified
         user.setEnabled(false);
+
+        // Send email verification email to user
+        emailVerificationService.sendEmailVerification(user);
+
         // Save user to database
-
-        try {
-            emailVerificationService.sendEmailVerification(user);
-        } catch(Exception e) {
-            // TODO: email send failed not valid email or other mail error
-            throw new UTSAPlaceException();
-        }
-
         final User createdUser = userRepository.save(user);
 
-        return user;
+        // Hide encrypted password: DO NOT REMOVE!
+        createdUser.setPassword(null);
+
+        return createdUser;
     }
 
 }

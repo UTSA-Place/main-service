@@ -3,6 +3,8 @@ package com.example.UTSAPlaceBackend.user;
 
 import com.example.UTSAPlaceBackend.models.LoginResponse;
 import com.example.UTSAPlaceBackend.models.User;
+import com.example.UTSAPlaceBackend.util.exceptions.AuthenticationException;
+import com.example.UTSAPlaceBackend.util.exceptions.EmailNotVerifiedException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,26 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AuthController {
 
-    private UserService userService;
-
     private AuthService authService;
-
-    private AuthenticationManager authManager;
-
 
     @PostMapping("/register")
     public User register(@RequestBody User user) throws Exception {
         log.info("Registering user: {}", user.getUsername());
-        // TODO: handle exception
         final User newUser = authService.register(user);
         log.info("User created: {}", user.getUsername());
         return newUser;
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody User user) {
+    public LoginResponse login(@RequestBody User user) throws AuthenticationException, EmailNotVerifiedException {
         log.info("Logging in user: {}", user.getUsername());
-        // TODO: handle exceptions
         return authService.login(user);
     }
 

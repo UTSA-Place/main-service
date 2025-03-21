@@ -8,6 +8,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +31,7 @@ public class EmailVerification {
             name="user",
             unique = true
     )
-
+    @NotFound(action = NotFoundAction.IGNORE)
     private User user;
 
 }

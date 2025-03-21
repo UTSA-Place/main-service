@@ -3,8 +3,10 @@ package com.example.UTSAPlaceBackend.email;
 import com.example.UTSAPlaceBackend.config.PasswordEncoder;
 import com.example.UTSAPlaceBackend.models.User;
 import com.example.UTSAPlaceBackend.user.UserRepository;
+import com.example.UTSAPlaceBackend.util.exceptions.EmailVerificationException;
 import com.example.UTSAPlaceBackend.util.exceptions.UTSAPlaceException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class EmailVerificationService {
 
@@ -30,31 +33,28 @@ public class EmailVerificationService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    public User verifyEmail(final String token) throws EmailVerificationException {
 
-    private EmailVerification findEmailVerification(final String token) {
-        return verificationRepository.findByToken(token).orElseThrow(() ->
-                // TODO: specify error
-                new UTSAPlaceException()
-        );
-    }
-
-    public User verifyEmail(final String token) {
-
-        // Get verification if exists
-        EmailVerification verification = findEmailVerification(token);
+        // Find verification by token if it exists
+        final EmailVerification verification = verificationRepository.findByToken(token).orElseThrow(() -> {
+            log.info("Email verification not found for token: {}", token);
+            return new EmailVerificationException("Email verification does not exist");
+        });
 
         // Check if email verification has expired
         if(verification.getExpiration().isAfter(LocalDateTime.now())) {
-            throw new UTSAPlaceException();
+            throw new EmailVerificationException("Email verification expired");
         }
 
-        // Get user from verification and update to enabled
+        // Get user from verification and update to enabled marking user as verified
         User user = verification.getUser();
         user.setEnabled(true);
+
         // Save updated user
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        // HIDE PASSWORD: DO NOT REMOVE!!
+        user.setPassword(null);
+        return updatedUser;
     }
 
     public void sendEmailVerification(final User user) throws MailSendException {

@@ -41,10 +41,8 @@ public class SecurityConfig {
                 .headers((headers) ->headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/*").authenticated()
-                        .requestMatchers("/*","/swagger-ui/*", "/v3/api-docs/**", "/auth/*", "/css/*", "/js/*", "/canvas/*").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/h2-console/**", "/*","/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/css/**", "/js/**", "/api/canvas/**").permitAll()
+
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -35,4 +35,4 @@ SMTP_PASSWORD: ${SMTP_PASSWORD}
 
 
 jwt:
-  secret: ${JWT_KEY:UTSAPlaceBackend}
+  secret: ${JWT_KEY:1fzFVP1MEth9ackF66Al99VO/oQ15dwxEoj452RvDL39pLvoemtW+1vhaZXwQC4g}
