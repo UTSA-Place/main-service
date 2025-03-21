@@ -25,7 +25,7 @@ public class JWTAuthFilter  extends OncePerRequestFilter {
 
         if (token == null || !token.startsWith("Bearer ")){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Authorization header is missing");
+            response.getWriter().write("UnAuthorizated");
             return;
         }
         token = token.substring(7);
@@ -43,12 +43,12 @@ public class JWTAuthFilter  extends OncePerRequestFilter {
 
         }else{
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid token");
+            response.getWriter().write("UnAuthorizated");
             return;
         } 
         }catch (IOException e){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid token");
+            response.getWriter().write("UnAuthorizated");
             return;
         }
       
