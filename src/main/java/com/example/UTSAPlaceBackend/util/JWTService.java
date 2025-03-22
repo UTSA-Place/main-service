@@ -3,16 +3,12 @@ package com.example.UTSAPlaceBackend.util;
 import java.util.Date;
 import java.util.Map; 
 import java.util.function.Function;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
@@ -21,7 +17,9 @@ public class JWTService {
     @Value("${jwt.secret}")
     private String JWT_KEY;
 
-    private final SecretKey secretKey = new SecretKeySpec(JWT_KEY.getBytes(), "HmacSHA256");
+    private SecretKey getSecretKey() {
+        return new SecretKeySpec(JWT_KEY.getBytes(), "HmacSHA256");
+    }
 
     // Method to create a JWT token
     public String createToken(String username, String role) {
@@ -35,7 +33,7 @@ public class JWTService {
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .signWith(secretKey)
+                .signWith(getSecretKey())
                 .compact();
     }
 
@@ -49,7 +47,7 @@ public class JWTService {
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .signWith(secretKey)
+                .signWith(getSecretKey())
                 .compact();
     }
 
@@ -83,7 +81,7 @@ public class JWTService {
     // Method to extract all claims from a JWT token
     private Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(getSecretKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -92,15 +90,6 @@ public class JWTService {
     // Method to check if a JWT token is expired
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
-
-    // Method to parse a JWT token and extract claims
-    public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 
     public void setUserInRequest(String username, HttpServletRequest request) {

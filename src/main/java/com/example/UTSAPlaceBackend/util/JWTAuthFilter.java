@@ -33,7 +33,8 @@ public class JWTAuthFilter  extends OncePerRequestFilter {
 
             if (token == null || !token.startsWith("Bearer ")) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Unauthorized request,");
+                // TODO: Respond by redirecting to login
+                response.getWriter().write("Unauthorized request.");
                 log.info("Missing JWT token");
                 return;
             }
@@ -51,12 +52,14 @@ public class JWTAuthFilter  extends OncePerRequestFilter {
                 } else {
                     log.info("JWT Authentication Failed: token invalid");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    // TODO: Redirect to login
                     response.getWriter().write("Unauthorized request.");
                     return;
                 }
             } catch (IOException e) {
                 log.info("JWT Authentication filter exception: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                // TODO: Redirect to login
                 response.getWriter().write("Unauthorized request.");
                 return;
             }
