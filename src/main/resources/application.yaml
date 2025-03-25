@@ -11,7 +11,7 @@ spring:
     url: ${H2_URL:jdbc:h2:file:./h2_db}
     driver-class-name: org.h2.Driver
     # Set default database user and password as
-    # "user", "password" if env variables not present
+    # "user", "password" if .env variables not present
     username: ${DB_USERNAME:user}
     password: ${DB_PASSWORD:password}
   jpa:
@@ -22,14 +22,15 @@ spring:
         hbm2ddl:
           auto: update
   config:
-    # Put a .env in project directory with env variables needed
+    # Put a ..env in project directory with .env variables needed
     import: "optional:file:.env[.properties]"
 
 server:
-  # Local dev port 8080 if not env variable
+  # Local dev port 8080 if not .env variable
   port: ${PORT:8080}
 
 # Custom properties
+BASE_URL: ${APP_URL:127.0.0.1:8080/}
 SMTP_USERNAME: ${SMTP_USERNAME}
 SMTP_PASSWORD: ${SMTP_PASSWORD}
 

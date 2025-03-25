@@ -34,7 +34,9 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody User user) throws AuthenticationException, EmailNotVerifiedException {
         log.info("Logging in user: {}", user.getUsername());
-        return authService.login(user);
+        final LoginResponse loginResponse = authService.login(user);
+        log.info("User {} successfully logged in", user.getUsername());
+        return loginResponse;
     }
 
 

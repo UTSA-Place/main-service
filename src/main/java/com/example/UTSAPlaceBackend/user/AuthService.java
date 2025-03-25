@@ -1,10 +1,15 @@
 package com.example.UTSAPlaceBackend.user;
 
+import com.example.UTSAPlaceBackend.UtsaPlaceBackendApplication;
 import com.example.UTSAPlaceBackend.util.exceptions.AuthenticationException;
 import com.example.UTSAPlaceBackend.util.exceptions.EmailNotVerifiedException;
 import com.example.UTSAPlaceBackend.util.exceptions.RegistrationException;
+import jakarta.mail.SendFailedException;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.angus.mail.smtp.SMTPAddressFailedException;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,18 +44,25 @@ public class AuthService {
     public LoginResponse login(User user) throws AuthenticationException, EmailNotVerifiedException {
 
         // Perform spring authentication
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
-        );
-        // If user is not authenticated throw exception
-        if(!authentication.isAuthenticated()) {
-                throw new AuthenticationException();
-        }
-        // Check is user email is verified
-        if (!((User) authentication.getPrincipal()).isEnabled()) {
-            throw new EmailNotVerifiedException();
+        Authentication authentication;
+        log.info("Authenticating user: {}", user.getUsername());
+        try {
+            authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            );
+            // Id user is disabled, user must verify email before logging in
+        } catch (DisabledException e) {
+            log.info("User {} not verified", user.getUsername());
+            throw new EmailNotVerifiedException("Email not verified");
         }
 
+        // If user is not authenticated throw exception
+        if(authentication != null && !authentication.isAuthenticated()) {
+            log.info("User {} not authenticated", user.getUsername());
+                throw new AuthenticationException("User not authenticated");
+        }
+
+        log.info("auth done");
         String token = jwtService.createToken2(user.getUsername());
         LoginResponse response = new LoginResponse();
         response.setToken(token);
@@ -58,7 +70,7 @@ public class AuthService {
 
     }
 
-    public User register(User user) throws RegistrationException {
+    public User register(User user) throws UTSAPlaceException {
 
         final String email = user.getUsername();
 
@@ -78,11 +90,32 @@ public class AuthService {
         // Set user to disabled until email is verified
         user.setEnabled(false);
 
-        // Send email verification email to user
-        emailVerificationService.sendEmailVerification(user);
-
         // Save user to database
         final User createdUser = userRepository.save(user);
+
+        try {
+            // Try to send verification email to user.
+            // May fail due to failed connection or invalid email address.
+            emailVerificationService.sendEmailVerification(user);
+        } catch (MailSendException e) {
+            log.info("Mail send exception: {}", e.getFailedMessages());
+            // Find root cause of MailSendException
+            for(Exception ex: e.getMessageExceptions()) {
+                // If root exception is due to invalid SMTP address
+                if(ex instanceof SendFailedException && ((SendFailedException) ex)
+                        .getNextException() instanceof SMTPAddressFailedException) {
+                    log.info("Invalid user email address: {}", user.getUsername());
+                    // Delete user since email is invalid
+                    userRepository.deleteById(user.getUsername());
+                    throw new RegistrationException("Invalid email address");
+                }
+            }
+            throw e;
+        } catch(Exception e) {
+            // Handle other unexpected exceptions
+            log.info("Unexpected exception occurred during user email verification: {}", (Object) e.getStackTrace());
+            throw new UTSAPlaceException(e.getMessage());
+        }
 
         // Hide encrypted password: DO NOT REMOVE!
         createdUser.setPassword(null);

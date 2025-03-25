@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public @ResponseBody ErrorResponse handleAuthenticationException(final AuthorizationException e) {
+    public @ResponseBody ErrorResponse handleAuthorizationException(final AuthorizationException e) {
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
     }
 

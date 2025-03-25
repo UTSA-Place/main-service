@@ -1,10 +1,7 @@
 package com.example.UTSAPlaceBackend.email;
 
 import com.example.UTSAPlaceBackend.models.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,13 +22,13 @@ public class EmailVerification {
 
     private LocalDateTime expiration;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(
             nullable = false,
             name="user",
-            unique = true
+            unique = true,
+            referencedColumnName = "username"
     )
-    @NotFound(action = NotFoundAction.IGNORE)
     private User user;
 
 }

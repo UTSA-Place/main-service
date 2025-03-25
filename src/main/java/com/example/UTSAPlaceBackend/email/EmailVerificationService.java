@@ -21,7 +21,7 @@ import java.util.UUID;
 @Service
 public class EmailVerificationService {
 
-    @Value("${BASE_URL:127.0.0.1:8080/}")
+    @Value("${BASE_URL}")
     private String BASE_URL;
 
     @Autowired
