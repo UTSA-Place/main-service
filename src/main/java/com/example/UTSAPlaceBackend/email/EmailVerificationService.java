@@ -37,41 +37,52 @@ public class EmailVerificationService {
 
         // Find verification by token if it exists
         final EmailVerification verification = verificationRepository.findByToken(token).orElseThrow(() -> {
-            log.info("Email verification not found for token: {}", token);
-            return new EmailVerificationException("Email verification does not exist");
+            log.info("Email verification token not found: {}", token);
+            return new EmailVerificationException();
         });
+
+        // Check is user is already verified
+        User user = verification.getUser();
+        if(user.isEnabled()) {
+            log.info("User {} has already been verified.", user.getUsername());
+            throw new EmailVerificationException("User already verified");
+        }
 
         // Check if email verification has expired
         if(verification.getExpiration().isAfter(LocalDateTime.now())) {
             throw new EmailVerificationException("Email verification expired");
         }
 
-        // Get user from verification and update to enabled marking user as verified
-        User user = verification.getUser();
+        // Update user to enabled marking user as verified
         user.setEnabled(true);
 
-        // Save updated user
+        // Save updated user as enabled
         User updatedUser = userRepository.save(user);
+
         // HIDE PASSWORD: DO NOT REMOVE!!
         user.setPassword(null);
         return updatedUser;
     }
 
     public void sendEmailVerification(final User user) throws MailSendException {
-        // Find previous email verification created
+        // Find previous email verification if one exists already
         final Optional<EmailVerification> verificationOpt = verificationRepository.findEmailVerificationByUser(user);
-        // If previous confirmation emil was sent delete prev confirmation and send new one
+        // If previous confirmation email was sent delete previous verification
         verificationOpt.ifPresent(verification -> verificationRepository.delete(verification));
-        // Create new verification link
+        // Create new email verification
         final EmailVerification newVerification = new EmailVerification(UUID.randomUUID().toString(), LocalDateTime.now(), user);
         verificationRepository.save(newVerification);
+
+        // Link to be sent
+        String verificationLink = BASE_URL + "/verify/" + newVerification.getToken();
 
         // Send email with verification link
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@utsaplace.com");
         message.setTo(user.getUsername());
         message.setSubject("Verify email address");
-        message.setText(String.format("Hello %s%s%s", BASE_URL, "verification/", newVerification.getToken()));
+        message.setText(String.format("Hello %s %s. Please verify you email at the link below!\n%s",
+                user.getFirstName(), user.getLastName(), verificationLink));
 
         mailSender.send(message);
     }

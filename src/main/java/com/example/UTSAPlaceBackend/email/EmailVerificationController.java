@@ -14,6 +14,7 @@ public class EmailVerificationController {
     private EmailVerificationService emailVerificationService;
 
     @GetMapping("/{token}")
+    @ResponseBody
     public String verifyEmail(@PathVariable String token) throws EmailVerificationException {
         User updatedUser = emailVerificationService.verifyEmail(token);
         // TODO: Shaun -  Send html file instead of raw string. Look at FileServerController
