@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public @ResponseBody ErrorResponse handleAuthenticationException(final AuthenticationException e) {
-        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
     }
 
     @ExceptionHandler

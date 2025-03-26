@@ -1,5 +1,6 @@
 package com.example.UTSAPlaceBackend.user;
 
+import com.example.UTSAPlaceBackend.models.LoginRequest;
 import com.example.UTSAPlaceBackend.util.exceptions.AuthenticationException;
 import com.example.UTSAPlaceBackend.util.exceptions.EmailNotVerifiedException;
 import com.example.UTSAPlaceBackend.util.exceptions.RegistrationException;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.angus.mail.smtp.SMTPAddressFailedException;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,29 +42,32 @@ public class AuthService {
 
     private JWTService jwtService;
 
-    public LoginResponse login(User user) throws AuthenticationException, EmailNotVerifiedException {
+    public LoginResponse login(LoginRequest request) throws AuthenticationException, EmailNotVerifiedException {
 
         // Perform spring authentication
-        Authentication authentication;
-        log.info("Authenticating user: {}", user.getUsername());
+        Authentication authentication = null;
+        log.info("Authenticating user: {}", request.getUsername());
         try {
             authentication = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
-            // Id user is disabled, user must verify email before logging in
+            // If user is disabled, user must verify email before logging in
         } catch (DisabledException e) {
-            log.info("User {} not verified", user.getUsername());
+            log.info("User {} not verified", request.getUsername());
             throw new EmailNotVerifiedException("Email not verified");
+            // Invalid credentials were used
+        } catch (BadCredentialsException e) {
+            log.info("Invalid username or password: {}", request);
+            throw new AuthenticationException("Invalid username or password");
         }
 
         // If user is not authenticated throw exception
         if(authentication != null && !authentication.isAuthenticated()) {
-            log.info("User {} not authenticated", user.getUsername());
+            log.info("Unable to authenticate user: {}", request);
                 throw new AuthenticationException("User not authenticated");
         }
 
-        log.info("auth done");
-        String token = jwtService.createToken2(user.getUsername());
+        String token = jwtService.createToken2(request.getUsername());
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         return response;
@@ -72,7 +77,6 @@ public class AuthService {
     public User register(User user) throws UTSAPlaceException {
 
         final String email = user.getUsername();
-
         // Throw exception if user already exists
         if(userRepository.findByUsername(email).isPresent()) {
             log.info("Registration failed for user: {}. User already exists.", email);
@@ -112,8 +116,8 @@ public class AuthService {
             throw e;
         } catch(Exception e) {
             // Handle other unexpected exceptions
-            log.info("Unexpected exception occurred during user email verification: {}", (Object) e.getStackTrace());
-            throw new UTSAPlaceException(e.getMessage());
+            log.info("Unexpected exception occurred sending email verification: {}", (Object) e.getStackTrace());
+            throw new UTSAPlaceException("An unexpected error occurred");
         }
 
         // Hide encrypted password: DO NOT REMOVE!

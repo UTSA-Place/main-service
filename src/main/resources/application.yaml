@@ -6,6 +6,7 @@ spring:
     console:
       # See DB console for local deployment at: http://localhost:8082/h2-console
       enabled: ${PROD:true}
+      path: /admin/db-console # Path for database console
   datasource:
     # Uses stored file memory DB for prod
     url: ${H2_URL:jdbc:h2:file:./h2_db}
@@ -30,9 +31,9 @@ server:
   port: ${PORT:8080}
 
 # Custom properties
-BASE_URL: ${APP_URL:127.0.0.1:8080/}
-SMTP_USERNAME: ${SMTP_USERNAME}
-SMTP_PASSWORD: ${SMTP_PASSWORD}
+BASE_URL: ${APP_URL:http://127.0.0.1:8080}
+SMTP_USERNAME: ${SMTP_USERNAME} # Gmail api username
+SMTP_PASSWORD: ${SMTP_PASSWORD} # Gmail api password
 
 
 jwt:

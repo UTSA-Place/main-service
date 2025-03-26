@@ -58,6 +58,7 @@ public class EmailVerificationService {
 
         // Save updated user as enabled
         User updatedUser = userRepository.save(user);
+        log.info("User {} has been verified.", updatedUser.getUsername());
 
         // HIDE PASSWORD: DO NOT REMOVE!!
         user.setPassword(null);

@@ -1,6 +1,7 @@
 package com.example.UTSAPlaceBackend.user;
 
 
+import com.example.UTSAPlaceBackend.models.LoginRequest;
 import com.example.UTSAPlaceBackend.models.LoginResponse;
 import com.example.UTSAPlaceBackend.models.User;
 import com.example.UTSAPlaceBackend.util.exceptions.AuthenticationException;
@@ -30,10 +31,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody User user) throws AuthenticationException, EmailNotVerifiedException {
-        log.info("Logging in user: {}", user.getUsername());
-        final LoginResponse loginResponse = authService.login(user);
-        log.info("User {} successfully logged in", user.getUsername());
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) throws AuthenticationException, EmailNotVerifiedException {
+        log.info("Logging in user: {}", request.getUsername());
+        final LoginResponse loginResponse = authService.login(request);
+        log.info("User {} successfully logged in", request.getUsername());
         return loginResponse;
     }
 
