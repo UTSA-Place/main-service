@@ -9,7 +9,7 @@ import java.util.function.Predicate;
  * Validator class defines open endpoints that do not need authentication filtering.
  * */
 @Component
-public class RouterValidator {
+public class JWTFilterRouteValidator {
 
     public static final List<String> openEndpoints = List.of(
             "auth/register",
@@ -21,4 +21,5 @@ public class RouterValidator {
     public Predicate<HttpServletRequest> isSecured = request ->
             openEndpoints.stream()
                     .noneMatch(uri -> request.getRequestURI().contains(uri));
+
 }

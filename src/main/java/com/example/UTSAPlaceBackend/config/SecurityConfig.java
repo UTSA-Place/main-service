@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.UTSAPlaceBackend.user.UserService;
-import com.example.UTSAPlaceBackend.util.JWTAuthFilter;
+import com.example.UTSAPlaceBackend.JWT.JWTAuthFilter;
 
 import lombok.AllArgsConstructor;
 
@@ -37,12 +37,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+                //.httpBasic(AbstractHttpConfigurer::disable)
                 .headers((headers) ->headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/auth/**", "/verify/**", "/h2-console/**").permitAll()
-                        .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/auth/**", "/verify/**").permitAll()
+                        .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").hasAnyAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -50,7 +50,6 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .build();
     }
 

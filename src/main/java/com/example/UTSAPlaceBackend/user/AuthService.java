@@ -1,6 +1,5 @@
 package com.example.UTSAPlaceBackend.user;
 
-import com.example.UTSAPlaceBackend.UtsaPlaceBackendApplication;
 import com.example.UTSAPlaceBackend.util.exceptions.AuthenticationException;
 import com.example.UTSAPlaceBackend.util.exceptions.EmailNotVerifiedException;
 import com.example.UTSAPlaceBackend.util.exceptions.RegistrationException;
@@ -19,7 +18,7 @@ import com.example.UTSAPlaceBackend.email.EmailVerificationService;
 import com.example.UTSAPlaceBackend.models.LoginResponse;
 import com.example.UTSAPlaceBackend.models.User;
 import com.example.UTSAPlaceBackend.util.EmailValidator;
-import com.example.UTSAPlaceBackend.util.JWTService;
+import com.example.UTSAPlaceBackend.JWT.JWTService;
 import com.example.UTSAPlaceBackend.util.exceptions.UTSAPlaceException;
 
 import lombok.AllArgsConstructor;

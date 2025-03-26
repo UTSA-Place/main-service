@@ -2,6 +2,9 @@ package com.example.UTSAPlaceBackend.models;
 
 import java.util.Collection;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,12 +24,14 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
 
     @Id
+    @NotEmpty(message="First name required")
     private String username;
+    @NotEmpty(message="First name required")
     private String firstName;
+    @NotEmpty(message="Last name required")
     private String lastName;
     private String password;
     private boolean enabled;
-    
 
 
     @Override

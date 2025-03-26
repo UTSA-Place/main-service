@@ -1,10 +1,14 @@
 package com.example.UTSAPlaceBackend.util.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.List;
 
 /**
  * Catches exceptions and sends http Response as specified for each exception type
@@ -46,5 +50,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorResponse handleBadRequestException(final BadRequestException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse handleFieldValidationException(final MethodArgumentNotValidException e) {
+        StringBuilder sb = new StringBuilder();
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        for (int i = 0; i < fieldErrors.size(); i++) {
+            sb.append(fieldErrors.get(i).getDefaultMessage());
+            if (i != fieldErrors.size() - 1) sb.append(", ");
+        }
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), sb.toString());
+
     }
 }

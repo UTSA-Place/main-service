@@ -1,4 +1,4 @@
-package com.example.UTSAPlaceBackend.util;
+package com.example.UTSAPlaceBackend.JWT;
 
 import java.util.Date;
 import java.util.Map; 
@@ -90,10 +90,6 @@ public class JWTService {
     // Method to check if a JWT token is expired
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
-
-    public void setUserInRequest(String username, HttpServletRequest request) {
-        request.setAttribute("username", username);
     }
 
 
