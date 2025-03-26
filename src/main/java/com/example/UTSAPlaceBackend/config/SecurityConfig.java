@@ -43,11 +43,21 @@ public class SecurityConfig {
                 //.httpBasic(AbstractHttpConfigurer::disable)
                 .headers((headers) ->headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+
+
+
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/auth/**", "/verify/**").permitAll()
-                        .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").hasRole("ADMIN")
+                        // Open endpoints
+                        .requestMatchers("/auth/**", "/verify/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/**").permitAll()
+                        // Must be admin to access endpoints
+                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                        // All other endpoints must be logged in
                         .anyRequest().authenticated()
                 )
+
+
+
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )

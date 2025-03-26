@@ -15,10 +15,11 @@ public class CanvasController {
     private CanvasService canvasService;
 
     @PostMapping("/place")
-    public void placePixel(@RequestBody Pixel pixel) {
+    public Pixel placePixel(@RequestBody Pixel pixel) {
         log.info("Pixel created: {}", pixel.toString());
         Pixel savedPixel = canvasService.placePixel(pixel);
         log.info("Pixel created: {}", savedPixel.toString());
+        return pixel;
     }
 
     @GetMapping("/")

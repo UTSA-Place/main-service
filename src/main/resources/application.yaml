@@ -4,7 +4,7 @@ spring:
     name: UTSAPlaceBackend
   h2:
     console:
-      # See DB console for local deployment at: http://localhost:8082/h2-console
+      # See DB console for local deployment at: http://localhost:8080/h2-console
       enabled: ${PROD:true}
       path: /admin/db-console # Path for database console
   datasource:

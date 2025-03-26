@@ -67,7 +67,7 @@ public class AuthService {
                 throw new AuthenticationException("User not authenticated");
         }
 
-        String token = jwtService.createToken2(request.getUsername());
+        String token = jwtService.createToken(request.getUsername());
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         return response;
@@ -114,9 +114,11 @@ public class AuthService {
             throw e;
         } catch(Exception e) {
             // Handle other unexpected exceptions
-            log.info("Unexpected exception occurred sending email verification: {}", (Object) e.getStackTrace());
-            throw new UTSAPlaceException("An unexpected error occurred");
+            log.info("Unexpected exception occurred sending email verification: {}", e.getMessage());
+            userRepository.deleteById(createdUser.getUsername());
+            throw new UTSAPlaceException(e.getMessage());
         }
+
 
         // Hide encrypted password: DO NOT REMOVE!
         createdUser.setPassword(null);

@@ -33,7 +33,7 @@ public class JWTService {
     }
 
     // Method to create a JWT token
-    public String createToken(String username, GrantedAuthority role) {
+    public String createToken(String username) {
         Map<String, String> claims = Map.of(
                 "username", username
         );
