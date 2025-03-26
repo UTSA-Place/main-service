@@ -1,15 +1,22 @@
 package com.example.UTSAPlaceBackend.JWT;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Map; 
+import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.example.UTSAPlaceBackend.models.UserRole;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 @Service
 public class JWTService {
@@ -17,27 +24,16 @@ public class JWTService {
     @Value("${jwt.secret}")
     private String JWT_KEY;
 
+    private final int ACCESS_TOKEN_EXPIRATION_MS = 1000 * 60 * 60 * 24 * 7;
+
+    private final int REFRESH_TOKEN_EXPIRATION_MS = 100 * 60 * 60;
+
     private SecretKey getSecretKey() {
         return new SecretKeySpec(JWT_KEY.getBytes(), "HmacSHA256");
     }
 
     // Method to create a JWT token
-    public String createToken(String username, String role) {
-        Map<String, String> claims = Map.of(
-                "username", username,
-                "role", role
-        );
-        return Jwts
-                .builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .signWith(getSecretKey())
-                .compact();
-    }
-
-    public String createToken2(String username) {
+    public String createToken(String username, GrantedAuthority role) {
         Map<String, String> claims = Map.of(
                 "username", username
         );
@@ -46,7 +42,7 @@ public class JWTService {
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_MS))
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -60,7 +56,6 @@ public class JWTService {
             return false;
         }
     }
-
 
     // Method to extract the username from a JWT token
     public String extractUsername(String tokenString) {
@@ -89,7 +84,7 @@ public class JWTService {
 
     // Method to check if a JWT token is expired
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token).before(new Date(System.currentTimeMillis()));
     }
 
 

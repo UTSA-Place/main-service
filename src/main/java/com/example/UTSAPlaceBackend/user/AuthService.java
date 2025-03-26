@@ -90,8 +90,6 @@ public class AuthService {
 
         // Encrypt password before storing in DB
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Set user to disabled until email is verified
-        user.setEnabled(false);
 
         // Save user to database
         final User createdUser = userRepository.save(user);

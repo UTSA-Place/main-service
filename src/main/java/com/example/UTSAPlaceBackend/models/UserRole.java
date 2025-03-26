@@ -1,4 +1,4 @@
-package com.example.UTSAPlaceBackend.user;
+package com.example.UTSAPlaceBackend.models;
 
 import lombok.Getter;
 
