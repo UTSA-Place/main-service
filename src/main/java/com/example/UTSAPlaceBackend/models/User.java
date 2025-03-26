@@ -33,7 +33,7 @@ public class User implements UserDetails {
     private String password;
     private boolean enabled;
 
-
+    // TODO: Implement roles/permissions
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
